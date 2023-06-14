@@ -1,0 +1,17 @@
+# This contains the url and the download time of the documents
+
+# A sample contents of the documents.yml
+# /import/websites/cabsec.gov.in/swearNewMin/2014/1_Upload_3.pdf:
+#   url: https://cabsec.gov.in/writereaddata/swearingofnewministers/english/1_Upload_3.pdf
+#   download_time: 2021-08-30 15:41:53
+#   name: 1_Upload_3.pdf
+
+/import/websites/dept.gov.in/uploads/upload_3456_12022023.pdf
+   url: https://dept.gov.in/uploads/upload_3456.12022023.pdf
+   download_time: 2022-08-30 15:41:53
+   name: dept-1.pdf
+
+/import/websites/dept.gov.in/uploads/upload_3456_12022024.pdf
+   url: https://dept.gov.in/uploads/upload_3456.12022023.pdf
+   download_time: 2022-09-30 15:41:53
+   name: dept-2.pdf

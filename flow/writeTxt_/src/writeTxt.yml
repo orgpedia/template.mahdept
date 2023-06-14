@@ -1,0 +1,47 @@
+description: This folder(task) runs the OCR extracts tables and paragraphs, translates them and writes as a text file.
+
+ignore_docs: [ ]
+
+pipeline:
+
+  - name: gcv_recognizer2
+    config:
+      bucket: orgpediafound
+
+  - name: orient_pages
+    config:
+      min_word_len: 4
+
+  # - name: page_image_builder_embedded
+  #   config:
+  #     image_dir: /export/page_images
+
+  - name: pdftable_finder
+    config:
+      skip_row_with_merged_cells: False
+      heading_offset: 0 # ignore heading
+      header_row: never
+
+  - name: line_finder
+    config:
+      keep_empty_lines: True
+      quick: True
+      newline_height_multiple: 1.6
+
+  # - name: html_generator
+  #   config:
+  #     html_root: output/html
+  #     color_dict:
+  #       table:
+  #         row1: red
+  #         row2: yellow
+  #       table_edges: green
+  #       word: blue        
+
+  - name: para_finder
+
+  - name: text_writer
+  
+          
+
+

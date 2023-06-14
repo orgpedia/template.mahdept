@@ -1,0 +1,4 @@
+# Ignore emacs backup files
+__pycache__/
+*~
+.DS_Store

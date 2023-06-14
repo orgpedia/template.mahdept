@@ -1,0 +1,17 @@
+# questions
+dept_name:
+    type: str
+    help: What is the full deparment Name ? Home Department, Public Works Department
+
+org_code:
+    type: str
+    help: What is the abbreviated name of this organization (one word) ? ex mahedu, mahhome
+
+dept_short_name:
+    type: str
+    help: What is the short department name used in orders database.
+    
+
+_exclude:
+   - \.git
+   - copier\.yml

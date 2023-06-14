@@ -31,8 +31,8 @@ install: pyproject.toml
 
 import:
 	cd import/websites/gr.maharashtra.gov.in/ && ln -s $(GR_DIR)/{{dept_short_name}} .
-	poetry run import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents
-	poetry run flow/src/link_new.py import/documents flow/writeTxt_/input
+	poetry python run import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents
+	poetry python run flow/src/link_new.py import/documents flow/writeTxt_/input
 
 flow: $(tasks)
 $(tasks):

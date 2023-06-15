@@ -66,8 +66,10 @@ format:
 	poetry run black -q .
 	poetry run ruff --fix .
 
-export: format lint check readme
-	poetry run op exportpackage export/data export/orgpedia_$(org_code)
+export: format lint
+	poetry run make -C flow/writeTxt_ compress
+	# git add .
+	# git commit
 
 # Use pre-commit if there are lots of edits,
 # https://pre-commit.com/ for instructions

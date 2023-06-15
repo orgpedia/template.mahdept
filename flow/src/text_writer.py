@@ -1,4 +1,3 @@
-import json
 from itertools import groupby
 from operator import itemgetter
 from pathlib import Path
@@ -6,14 +5,9 @@ from pathlib import Path
 from docint.vision import Vision
 
 
-
 @Vision.factory(
     "text_writer",
-    default_config={
-        "stub": "textwriter",
-        "output_dir": "output/",
-        "languages": ["en"]
-    },
+    default_config={"stub": "textwriter", "output_dir": "output/", "languages": ["en"]},
 )
 class TextWriter:
     def __init__(self, stub, output_dir, languages):
@@ -31,17 +25,19 @@ class TextWriter:
             return
 
         rows = []
-        for row in [r[lang] for r in  table_info['rows']]:
+        for row in [r[lang] for r in table_info['rows']]:
             rows.append(row.strip('|').split('|'))
 
-        full_rows = [ r for r in rows if len(rows) > 1 ]
+        # full_rows = [r for r in rows if len(rows) > 1]
         num_cols = max(len(r) for r in rows)
-        col_widths = [max((len(r[idx]) if idx < len(r) else 0) for r in rows) for idx in range(num_cols)]
+        col_widths = [
+            max((len(r[idx]) if idx < len(r) else 0) for r in rows) for idx in range(num_cols)
+        ]
 
-        total_width = sum(col_widths) + (3 * (num_cols-1)) + 2 + 2
+        total_width = sum(col_widths) + (3 * (num_cols - 1)) + 2 + 2
         lines.append('-' * total_width)
         for row in rows:
-            txt_row = [ f'{c:{max(w, 1)}s}' for (c, w) in zip(row, col_widths)]
+            txt_row = [f'{c:{max(w, 1)}s}' for (c, w) in zip(row, col_widths)]
             lines.append(f"| {' | '.join(txt_row)} |")
         lines.append('-' * total_width)
 
@@ -51,10 +47,10 @@ class TextWriter:
             mr_txt = '|'.join(c.text_with_break() for c in row.cells)
             en_txt = '|'.join(c for c in row_trans)
             row_infos.append({'mr': f'|{mr_txt}|', 'en': f'|{en_txt}|'})
-        return { 'rows': row_infos }
+        return {'rows': row_infos}
 
     def __call__(self, doc):
-        lang_lines_dict = dict((l, []) for l in self.languages)
+        lang_lines_dict = dict((lang, []) for lang in self.languages)
         for page_idx, page in enumerate(doc.pages):
 
             for (lang, lines) in lang_lines_dict.items():
@@ -65,17 +61,15 @@ class TextWriter:
                 para_table_idx_dict[para_idx] = list(t for (t, p) in table_idxs)
 
             # add dummy entry, if table is last item
-            for para_idx, para in enumerate(page.paras + [None]): 
+            for para_idx, para in enumerate(page.paras + [None]):
                 if para_idx in para_table_idx_dict:
                     for table_idx in para_table_idx_dict[para_idx]:
                         t = table_idx
                         table_info = self.build_table_info(page.tables[t], page.table_trans[t])
-                        
-                        table, table_trans = page.tables[table_idx], page.table_trans[table_idx]
                         for (lang, lines) in lang_lines_dict.items():
                             self.write_table(table_info, lang, lines)
 
-                if not para: # dummy entry
+                if not para:  # dummy entry
                     continue
 
                 for (lang, lines) in lang_lines_dict.items():
@@ -83,7 +77,7 @@ class TextWriter:
                         lines.append(page.para_trans[para_idx])
                     else:
                         lines.append(para.text_with_break().strip())
-        #end
+        # end
         for (lang, lines) in lang_lines_dict.items():
             lang_file = self.output_dir / f'{doc.pdf_name}.{lang}.txt'
             lang_file.write_text('\n'.join(lines))

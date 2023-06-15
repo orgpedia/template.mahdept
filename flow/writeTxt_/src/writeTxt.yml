@@ -36,7 +36,7 @@ pipeline:
   #         row1: red
   #         row2: yellow
   #       table_edges: green
-  #       word: blue        
+  #       word: blue
 
   - name: para_finder
     config:
@@ -49,7 +49,3 @@ pipeline:
   - name: text_writer
     config:
       languages: ['en', 'mr']
-  
-          
-
-

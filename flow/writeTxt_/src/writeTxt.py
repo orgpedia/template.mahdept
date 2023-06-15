@@ -2,14 +2,11 @@ import sys
 from operator import attrgetter
 from pathlib import Path
 
-
-
-import docint
-import orgpedia
-
-import para_finder
-import doc_translator
-import text_writer
+import doc_translator  # noqa
+import docint  # noqa
+import orgpedia  # noqa
+import para_finder  # noqa
+import text_writer  # noqa
 
 if __name__ == '__main__':
     input_path = Path(sys.argv[1])
@@ -26,15 +23,15 @@ if __name__ == '__main__':
 
         for doc in docs:
             output_doc_path = output_path / (doc.pdf_name + '.doc.json')
-            doc.to_disk(output_doc_path) 
+            doc.to_disk(output_doc_path)
     elif input_path.suffix.lower() == '.pdf':
         doc = viz(input_path)
-        doc.to_disk(output_path)        
+        doc.to_disk(output_path)
 
     elif input_path.suffix.lower() in ('.list', '.lst'):
         print('processing list')
         input_files = input_path.read_text().split('\n')
-        
+
         pdf_files = [Path('input') / f for f in input_files if f and f[0] != '#']
         pdf_files = [p for p in pdf_files if p.exists()]
 
@@ -42,8 +39,3 @@ if __name__ == '__main__':
         for doc in docs:
             output_doc_path = output_path / (doc.pdf_name + '.doc.json')
             doc.to_disk(output_doc_path)
-        
-        
-        
-        
-

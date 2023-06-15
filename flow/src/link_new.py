@@ -1,7 +1,8 @@
 import os
-from pathlib import Path
-from docint.util import get_repo_dir, get_repo_path
 import sys
+from pathlib import Path
+
+from docint.util import get_repo_dir, get_repo_path
 
 
 def get_num(pdf_file):

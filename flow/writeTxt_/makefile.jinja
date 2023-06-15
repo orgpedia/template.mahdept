@@ -1,5 +1,9 @@
-export GOOGLE_APPLICATION_CREDENTIALS = $(PWD)/../../.secrets/google.token
-export PYTHONPATH := $(PWD)/../src:$(PYTHONPATH)
+# introduced in make3.81
+ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+ROOT_DIR := $(strip $(ROOT_DIR))
+
+export GOOGLE_APPLICATION_CREDENTIALS = $(ROOT_DIR)/../../.secrets/google.token
+export PYTHONPATH := $(ROOT_DIR)/../src:$(PYTHONPATH)
 
 RAW_FILES := $(wildcard output/*.ocr.json) $(wildcard conf/*_translations.json)
 GZ_FILES := $(wildcard output/*.ocr.json.gz) $(wildcard conf/*_translations.json.gz)

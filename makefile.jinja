@@ -2,7 +2,7 @@
 
 org_code := {{ org_code }}
 
-tasks := 
+tasks :=
 tasks := $(foreach t,$(tasks),flow/$t)
 
 
@@ -62,4 +62,3 @@ export: format lint check readme
 # Also set git hook `pre-commit install`
 pre-commit:
 	pre-commit run --all-files
-

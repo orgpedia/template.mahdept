@@ -4,9 +4,9 @@ import datetime
 import sys
 import os
 
-
 import yaml
-from docint.util import get_repo_path, get_repo_dir, get_full_path
+
+from docint.util import get_repo_path, get_repo_dir
 from docint import pdfwrapper
 
 BaseURL = "https://gr.maharashtra.gov.in"
@@ -23,7 +23,7 @@ def get_crawl_date(date_str):
 
 def get_url_infos(crawl_dir):
     def get_code(pdf_file):
-        assert pdf_file.name[-4:].lower() == ".pdf", f'Not a pdf file: {pdf_file.name}'
+        assert pdf_file.name[-4:].lower() == ".pdf", f"Not a pdf file: {pdf_file.name}"
         return pdf_file.name.split(".")[0]
 
     def build_code_file_dict():
@@ -65,34 +65,36 @@ def main():
     def get_pdf_info(doc_path):
         try:
             pdf = pdfwrapper.open(doc_path)
-        except :
-            print(f'Unable to load: {doc_path}')
+        except: # noqa pdfwrapper should raise exceptions
+            print(f"Unable to load: {doc_path}")
             return 0, []
-            
-        large_image_idxs = [ p.page_idx for p in pdf.pages if p.has_large_image ]
+
+        large_image_idxs = [p.page_idx for p in pdf.pages if p.has_large_image]
         return len(pdf.pages), large_image_idxs
 
     dept_dir = Path(sys.argv[1])
     documents_dir = Path(sys.argv[2])
 
-    print(f'Processing department directory: {dept_dir}')    
+    print(f"Processing department directory: {dept_dir}")
 
     # load documents
     documents_file = documents_dir / "documents.yml"
     documents_dict = load_documents(documents_file)
 
-    start_num = max((get_doc_num(d["name"]) for d in documents_dict.values()), default=0)
+    start_num = max(
+        (get_doc_num(d["name"]) for d in documents_dict.values()), default=0
+    )
 
     crawl_dirs = [d for d in dept_dir.glob("*") if d.is_dir()]
     crawl_dirs.sort(key=get_crawl_date)
 
     doc_infos = {}
     for crawl_dir in crawl_dirs:
-        print(f'Processing: {str(crawl_dir)}')
+        print(f"Processing: {str(crawl_dir)}")
         url_infos = get_url_infos(crawl_dir)
-        url_infos.sort(key=lambda u: int(u['code'][:8]))
-        print(f'\t#url_infos: {len(url_infos)}')
-        
+        url_infos.sort(key=lambda u: int(u["code"][:8]))
+        print(f"\t#url_infos: {len(url_infos)}")
+
         for url_info in url_infos:
             if url_info["code"] in documents_dict:
                 continue
@@ -110,31 +112,31 @@ def main():
             if not num_pages:
                 continue
 
-            
             url_info["num_pages"] = num_pages
             url_info["large_image_idxs"] = large_image_idxs
-            
+
             url_info["crawl_dir"] = crawl_dir.name
             doc_infos[repo_path_str] = url_info
-    print(f'Writing #doc_infos: {len(doc_infos)}')
+    print(f"Writing #doc_infos: {len(doc_infos)}")
     if doc_infos:
         with open(documents_file, "a") as doc_file:
             doc_file.write(yaml.dump(doc_infos))
 
     if documents_file.exists():
-        documents_file_dict = yaml.load(documents_file.read_text(), Loader=yaml.FullLoader)
+        documents_file_dict = yaml.load(
+            documents_file.read_text(), Loader=yaml.FullLoader
+        )
         os.chdir(documents_file.parent)
-        
+
         for repo_path, doc_info in documents_file_dict.items():
-            relative_path = Path(f'../..{repo_path}')
+            relative_path = Path(f"../..{repo_path}")
             assert relative_path.exists()
-            
-            dst_path = doc_info['name']
+
+            dst_path = doc_info["name"]
             if not Path(dst_path).exists():
-                print(f'Symlinking {relative_path} -> {dst_path}')
+                print(f"Symlinking {relative_path} -> {dst_path}")
                 os.symlink(relative_path, dst_path)
-            
+
+
 if __name__ == "__main__":
     main()
-
-

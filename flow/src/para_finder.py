@@ -15,8 +15,8 @@ def build_para(page, para_lines):
     word_idxs = [w.word_idx for w in words]
     word_lines_idxs = [[w.word_idx for w in ws] for ws in word_lines]
 
-    para_text = ''.join(l.text_with_break() for l in para_lines)
-    print(f'>{para_text.strip()}<')
+    para_text = "".join(ln.text_with_break() for ln in para_lines)
+    print(f">{para_text.strip()}<")
 
     return Para(
         words=words,
@@ -31,13 +31,15 @@ def build_para(page, para_lines):
     "para_finder",
     default_config={
         "stub": "parafinder",
+        "write_output": True,
         "output_dir": "output/",
     },
 )
 class ParaFinder:
-    def __init__(self, stub, output_dir):
+    def __init__(self, stub, write_output, output_dir):
         self.conf_dir = Path("conf")
         self.stub = stub
+        self.write_output = write_output
         self.output_dir = Path(output_dir)
 
     def __call__(self, doc):
@@ -50,7 +52,9 @@ class ParaFinder:
             return any(t.box.subsumes(line) for t in page.tables)
 
         def in_table_idx(page, line):
-            return first((i for (i, t) in enumerate(page.tables) if t.box.subsumes(line)), None)
+            return first(
+                (i for (i, t) in enumerate(page.tables) if t.box.subsumes(line)), None
+            )
 
         def is_center_aligned(line):
             padding = 0.1
@@ -72,8 +76,9 @@ class ParaFinder:
                 continue
 
             table_para_idxs_set = set()
-            l_xmin, l_xmax = min((w.xmin for w in page.words), default=0.0), \
-                max((w.xmax for w in page.words), default=1.0)
+            l_xmin, l_xmax = min((w.xmin for w in page.words), default=0.0), max(
+                (w.xmax for w in page.words), default=1.0
+            )
 
             for (line_idx, line) in enumerate(page.lines):
                 if not line:
@@ -107,37 +112,53 @@ class ParaFinder:
                 para_lines.clear()
 
             page.table_para_idxs = sorted(table_para_idxs_set)
-            assert len(page.tables) == len(page.table_para_idxs), f'para {doc.pdf_name}:{page.page_idx} {len(page.tables)} <-> {page.table_para_idxs}'
+            assert len(page.tables) == len(
+                page.table_para_idxs
+            ), f"para {doc.pdf_name}:{page.page_idx} {len(page.tables)} <-> {page.table_para_idxs}"
 
-        json_path = self.output_dir / f"{doc.pdf_name}.{self.stub}.json"
-        def get_para_info(para, idx):
-            return {'page_idx': para.page_idx,
-                    'para_idx': idx,
-                    'text': para.text_with_break().strip()
+        if self.write_output:
+            json_path = self.output_dir / f"{doc.pdf_name}.{self.stub}.json"
+
+            def get_para_info(para, idx):
+                return {
+                    "page_idx": para.page_idx,
+                    "para_idx": idx,
+                    "text": para.text_with_break().strip(),
+                }
+
+            def get_table_info(table, idx):
+                row_texts = []
+                for row in table.all_rows:
+                    r = "|".join(c.text_with_break() for c in row.cells)
+                    row_texts.append(f"|{r}|")
+
+                    return {
+                        "page_idx": table.page_idx,
+                        "table_idx": idx,
+                        "rows": row_texts,
                     }
 
-        def get_table_info(table, idx):
-            row_texts = []
-            for row in table.all_rows:
-                r = "|".join(c.text_with_break() for c in row.cells)
-                row_texts.append(f'|{r}|')
+            para_infos = [
+                get_para_info(p, i)
+                for pg in doc.pages
+                for (i, p) in enumerate(pg.paras)
+            ]
+            table_infos = [
+                get_table_info(t, i)
+                for pg in doc.pages
+                for (i, t) in enumerate(pg.tables)
+            ]
+            table_para_idxs_infos = [pg.table_para_idxs for pg in doc.pages]
 
-            return {'page_idx': table.page_idx,
-                    'table_idx': idx,
-                    'rows': row_texts,
-                    }
-
-
-
-        [len(pg.paras) for pg in doc.pages]
-
-        para_infos = [ get_para_info(p, i) for pg in doc.pages for (i, p) in enumerate(pg.paras) ]
-        table_infos = [ get_table_info(t, i) for pg in doc.pages for (i, t) in enumerate(pg.tables)]
-        table_para_idxs_infos = [ pg.table_para_idxs for pg in doc.pages]
-
-        json_path.write_text(json.dumps({'para_infos': para_infos,
-                                         'table_infos': table_infos,
-                                         'table_para_idxs_infos': table_para_idxs_infos,
-                                         },
-                                        indent=2, ensure_ascii=False))
+            json_path.write_text(
+                json.dumps(
+                    {
+                        "para_infos": para_infos,
+                        "table_infos": table_infos,
+                        "table_para_idxs_infos": table_para_idxs_infos,
+                    },
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
         return doc

@@ -40,7 +40,13 @@ pipeline:
 
   - name: para_finder
 
+  - name: doc_translator
+    config:
+      write_output: True
+
   - name: text_writer
+    config:
+      languages: ['en', 'mr']
   
           
 

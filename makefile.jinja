@@ -6,7 +6,7 @@ tasks :=
 tasks := $(foreach t,$(tasks),flow/$t)
 
 
-.PHONY: help install import flow export check readme lint format pre-commit $(tasks)
+.PHONY: help install import flow export check readme lint format pre-commit $(tasks) check_env
 
 help:
 	$(info Please use 'make <target>', where <target> is one of)
@@ -29,13 +29,22 @@ help:
 install: pyproject.toml
 	poetry install --only=dev
 
+check_env:
+ifndef GR_DIR
+	$(error GR_DIR is undefined)
+endif
+ifndef SECRETS_DIR
+	$(error SECRETS_DIR is undefined)
+endif
+
+
 import/websites/gr.maharashtra.gov.in/{{dept_short_name}}:
 	cd import/websites/gr.maharashtra.gov.in/ && ln -s $(GR_DIR)/{{dept_short_name}} .
 
 .secrets/google.token:
 	cd .secrets && ln -s $(SECRETS_DIR)/google.token .
 
-import: import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .secrets/google.token
+import: check_env import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .secrets/google.token
 	poetry run python import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents
 	poetry run python flow/src/link_new.py import/documents flow/writeTxt_/input
 

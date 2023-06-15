@@ -39,10 +39,12 @@ pipeline:
   #       word: blue        
 
   - name: para_finder
+    config:
+      write_output: False
 
   - name: doc_translator
     config:
-      write_output: True
+      write_output: False
 
   - name: text_writer
     config:

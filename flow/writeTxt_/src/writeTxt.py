@@ -8,6 +8,8 @@ import docint
 import orgpedia
 
 import para_finder
+import doc_translator
+import text_writer
 
 if __name__ == '__main__':
     input_path = Path(sys.argv[1])

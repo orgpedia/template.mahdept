@@ -1,9 +1,30 @@
-GOOGLE_APPLICATION_CREDENTIALS="../../../.secrets/google.token"
-PYTHONPATH=$(PYTHONPATH):../src
+export GOOGLE_APPLICATION_CREDENTIALS = $(PWD)/../../.secrets/google.token
+export PYTHONPATH := $(PWD)/../src:$(PYTHONPATH)
 
-all:
+RAW_FILES := $(wildcard output/*.ocr.json) $(wildcard conf/*_translations.json)
+GZ_FILES := $(wildcard output/*.ocr.json.gz) $(wildcard conf/*_translations.json.gz)
+
+TO_COMPRESS_FILES := $(addsuffix .gz, $(RAW_FILES))
+TO_UNCOMPRESS_FILES := $(basename $(GZ_FILES))
+
+.PHONY: all compress uncompress
+
+all: uncompress
 	poetry run python src/writeTxt.py input output > logs/info.log
 
 
+uncompress: $(TO_UNCOMPRESS_FILES)
+output/%.ocr.json:
+	gunzip $@.gz
+conf/%.json:
+	gunzip $@.gz
+
+
+compress: $(TO_COMPRESS_FILES)
+output/%.ocr.json.gz: output/%.ocr.json
+	gzip $?
+conf/%.json.gz: conf/%.json
+	gzip $?
+	
 %:
 	poetry run python src/writeTxt.py input/{{org_code}}-$@.pdf output/{{org_code}}-$@.pdf.doc.json

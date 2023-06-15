@@ -1,37 +1,27 @@
-# Data-package: orgpedia_{{org_code}}
+# Orders of deparment of {{dept_name}} Government of Maharashtra
 
-Orders of deparment of {{dept_name}} Government of Maharashtra. The data is obtained by processing orders from Government of Maharashtra's [Orders Website](https://gr.maharashtra.gov.in/1145/Government-Resolutions) for department {{dept_name}}.
+This is a data package repository that process orders obtained from department of {{dept_name}} Government of Maharasthra. The data is obtained by processing orders from Government of Maharashtra's [Orders Website](https://gr.maharashtra.gov.in/1145/Government-Resolutions) website.
 
-The data package contains text files containting orders in original Marathi and English languages. The text file do not contain the order appendix pages.
+The data package contains text files containting orders in original Marathi and translated to English. The text file do not contain the order appendix pages.
 
 ## Accessing the data
 
-All the data is available in the [export/data](export/data) folder and it contains the following files
+All the data is available in the (flow/writeTxt_/output/) folder and it contains the following files
 
-1. [{{org_code}}-*.pdf.en.txt](export/data/): Orders in Marathi.
+1. [{{org_code}}-*.pdf.en.txt](flow/writeTxt_/output/): Orders in Marathi.
 
-2. [{{org_code}}-*.pdf.mr.txt](export/data/): Orders in English.
+2. [{{org_code}}-*.pdf.mr.txt](flow/writeTxt_/output/): Orders in English.
 
 
 The data is currently not relased through PyPI once advanced informaion is extracted the data will be released on PyPI.
 
-## Data Stats
-
-These are high level statistics, please check [flow](flow) directory for more information.
-
- - Number of Documents: 904
- - Documents Processed: 896
- - Number of Pages: 2142
-
- - Total Edits: YYY
- - Edits per Page:  *2.XXX* (YYY/XX)
 
 ## Data Processing
-This is a data package repository - it contains documents, configuration and code for processing the documents and creating data. In a sense it is different from code repositories that only contain code and not the artifacts the code generates.
+This is a data package repository - it contains all both the pipeline for generating data and the data generated. In a sense it is different from code repositories that only contain code and not the artifacts the code generates.
 
 The data processing is broken down in series of Tasks, where each task processes the data created in the upstream task (links in the `input` folder) and generages new data stored in the `output` folder. The directory layout of this repository follows the ideas mentioned in this video: [Principled Data Processing by Patrick Ball](https://www.youtube.com/watch?v=ZSunU9GQdcI). There are 3 main top-level directories `import`, `flow` and `export`. A *simple* `makefile`  orchestrates the document flow across these folders, run `make help` to find out more about the commands.
 
-You can check out the template repository [template.datapackage](https://github.com/orgpedia/template.datapackage) where each directory and sub-directory is explained. To understand how the data (`/export/data`) is generated from documents (`/import/documents/`) explore the [flow](flow) directory.
+You can check out the template repository [template.mahdept](https://github.com/orgpedia/template.mahdept) where each directory and sub-directory is explained. 
 
 ## Deverloper Notes
 

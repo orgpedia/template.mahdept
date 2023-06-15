@@ -157,6 +157,14 @@ logs/
 /export/html
 /export/orgpedia_{{org_code}}
 
+# Don't add output, but add ocr.json.gz
+
+/flow/writeTxt_/output/*
+!/flow/writeTxt_/output/*.ocr.json.gz
+!/flow/writeTxt_/output/*.en.txt
+!/flow/writeTxt_/output/*.mr.txt
+
+
 # Don't upload any log files, but add log directory
 *.log
 

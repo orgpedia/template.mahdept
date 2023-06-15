@@ -44,7 +44,7 @@ def get_url_infos(crawl_dir):
 
 
 def load_documents(documents_yml):
-    if not documents_yml.exists():
+    if not documents_yml.exists() or documents_yml.stat().st_size <= 0:
         return {}
     doc_infos = yaml.load(documents_yml.read_text(), Loader=yaml.FullLoader)
     documents_dict = dict((d["code"], d) for d in doc_infos.values())

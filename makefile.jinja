@@ -29,15 +29,15 @@ help:
 install: pyproject.toml
 	poetry install --only=dev
 
-$(GR_DIR)/{{dept_short_name}}:
+import/websites/gr.maharashtra.gov.in/{{dept_short_name}}:
 	cd import/websites/gr.maharashtra.gov.in/ && ln -s $(GR_DIR)/{{dept_short_name}} .
 
 .secrets/google.token:
 	cd .secrets && ln -s $(SECRETS_DIR)/google.token .
 
-import: $(GR_DIR)/{{dept_short_name}} .secrets/google.token
-	poetry python run import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents
-	poetry python run flow/src/link_new.py import/documents flow/writeTxt_/input
+import: import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .secrets/google.token
+	poetry run python import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents
+	poetry run python flow/src/link_new.py import/documents flow/writeTxt_/input
 
 flow: $(tasks)
 $(tasks):

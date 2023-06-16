@@ -45,7 +45,7 @@ class TextWriter:
         row_infos = []
         for row, row_trans in zip(table.all_rows, table_trans):
             mr_txt = '|'.join(c.text_with_break() for c in row.cells)
-            en_txt = '|'.join(c for c in row_trans)
+            en_txt = '|'.join(c if c is not None else c.text_with_break() for c in row_trans)
             row_infos.append({'mr': f'|{mr_txt}|', 'en': f'|{en_txt}|'})
         return {'rows': row_infos}
 
@@ -74,7 +74,10 @@ class TextWriter:
 
                 for (lang, lines) in lang_lines_dict.items():
                     if lang == 'en':
-                        lines.append(page.para_trans[para_idx])
+                        if page.para_trans[para_idx] is not None:
+                            lines.append(page.para_trans[para_idx])
+                        else:
+                            lines.append(para.text_with_break().strip())
                     else:
                         lines.append(para.text_with_break().strip())
         # end

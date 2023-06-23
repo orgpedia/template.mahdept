@@ -6,7 +6,7 @@ pipeline:
 
   - name: gcv_recognizer2
     config:
-      bucket: orgpediafound
+      bucket: orgpediafoundationindia
 
   - name: orient_pages
     config:

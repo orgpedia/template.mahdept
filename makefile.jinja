@@ -49,7 +49,7 @@ import/websites/gr.maharashtra.gov.in/{{dept_short_name}}:
 	cd .secrets && ln -s $(SECRETS_DIR)/google.token .
 
 import/models/ai4bharat/IndicTrans2-en/ct2_int8_model:
-	cd import/models/ai4bharat/IndicTrans2-en/ && ln -s $MODELS_DIR/ct2_int8_model .
+	cd import/models/ai4bharat/IndicTrans2-en/ && ln -s $(MODELS_DIR)/ct2_int8_model .
 
 import: check_env import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .secrets/google.token import/models/ai4bharat/IndicTrans2-en/ct2_int8_model
 	poetry run python import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents

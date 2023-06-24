@@ -63,7 +63,9 @@ class DocTranslator:
             [{"mr": k, "en": v} for (k, v) in self.indic2en_trans.items()],
             key=lambda d: d["mr"],
         )
-        self.translations_file.write_text(json.dumps(save_trans, indent=2, ensure_ascii=False))
+        self.translations_file.write_text(
+            json.dumps(save_trans, indent=2, ensure_ascii=False)
+        )
 
     def gcp_translate(self, texts_set):
         if not texts_set:
@@ -92,7 +94,10 @@ class DocTranslator:
         rows_texts = [get_row_texts(row) for row in table.all_rows]
         for row_texts in rows_texts:
             table_trans.append(
-                [trans_number(c) if is_number(c) else self.get_text_trans(c) for c in row_texts]
+                [
+                    trans_number(c) if is_number(c) else self.get_text_trans(c)
+                    for c in row_texts
+                ]
             )
         return table_trans
 
@@ -107,7 +112,9 @@ class DocTranslator:
 
             for row in [r for t in page.tables for r in t.all_rows]:
                 cell_texts += [
-                    c for c in get_row_texts(row) if not c.isascii() and not is_number(c)
+                    c
+                    for c in get_row_texts(row)
+                    if not c.isascii() and not is_number(c)
                 ]
 
         para_texts, cell_texts = set(para_texts), set(cell_texts)
@@ -115,7 +122,9 @@ class DocTranslator:
         self.gcp_translate(cell_texts)
 
         for page in doc.pages:
-            page.para_trans = [self.get_text_trans(p.text_with_break().strip()) for p in page.paras]
+            page.para_trans = [
+                self.get_text_trans(p.text_with_break().strip()) for p in page.paras
+            ]
             page.table_trans = [self.get_table_trans(t) for t in page.tables]
 
         if self.write_output:
@@ -123,7 +132,9 @@ class DocTranslator:
 
             def get_para_infos(page):
                 para_infos = []
-                for para_idx, (para, trans) in enumerate(zip(page.paras, page.para_trans)):
+                for para_idx, (para, trans) in enumerate(
+                    zip(page.paras, page.para_trans)
+                ):
                     para_infos.append(
                         {
                             "page_idx": page.page_idx,
@@ -138,18 +149,21 @@ class DocTranslator:
                 table_infos = []
                 for table_idx, table in enumerate(page.tables):
                     row_trans = page.table_trans[table_idx]
-                    for row_idx, (row, row_texts) in enumerate(zip(table.all_rows, row_trans)):
+                    for row_idx, (row, row_texts) in enumerate(
+                        zip(table.all_rows, row_trans)
+                    ):
                         cell_texts = [
-                            {"mr": c.text_with_break(), "en": ct} for (c, ct) in zip(row, row_texts)
+                            {"mr": c.text_with_break(), "en": ct}
+                            for (c, ct) in zip(row, row_texts)
                         ]
-                        table_infos.append(
-                            {
-                                "page_idx": page.page_idx,
-                                "table_idx": table_idx,
-                                "row_idx": row_idx,
-                                "cells": cell_texts,
-                            }
-                        )
+                    table_infos.append(
+                        {
+                            "page_idx": page.page_idx,
+                            "table_idx": table_idx,
+                            "row_idx": row_idx,
+                            "cells": cell_texts,
+                        }
+                    )
                 return table_infos
 
             para_infos = list(flatten(get_para_infos(pg) for pg in doc.pages))

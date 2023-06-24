@@ -51,7 +51,9 @@ class ParaFinder:
             return any(t.box.subsumes(line) for t in page.tables)
 
         def in_table_idx(page, line):
-            return first((i for (i, t) in enumerate(page.tables) if t.box.subsumes(line)), None)
+            return first(
+                (i for (i, t) in enumerate(page.tables) if t.box.subsumes(line)), None
+            )
 
         def is_center_aligned(line):
             padding = 0.1
@@ -127,12 +129,18 @@ class ParaFinder:
                 return {
                     "page_idx": table.page_idx,
                     "table_idx": idx,
-                    "rows": [r.get_markdown() for r in table.all_rows]
+                    "rows": [r.get_markdown() for r in table.all_rows],
                 }
 
-            para_infos = [get_para_info(p, i) for pg in doc.pages for (i, p) in enumerate(pg.paras)]
+            para_infos = [
+                get_para_info(p, i)
+                for pg in doc.pages
+                for (i, p) in enumerate(pg.paras)
+            ]
             table_infos = [
-                get_table_info(t, i) for pg in doc.pages for (i, t) in enumerate(pg.tables)
+                get_table_info(t, i)
+                for pg in doc.pages
+                for (i, t) in enumerate(pg.tables)
             ]
             table_para_idxs_infos = [pg.table_para_idxs for pg in doc.pages]
 

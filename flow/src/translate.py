@@ -12,24 +12,24 @@ def pairwise(iterable):
     return zip(a, b)
 
 
-def grouper(iterable, n, *, incomplete='fill', fillvalue=None):
+def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
     "Collect data into non-overlapping fixed-length chunks or blocks"
     # grouper('ABCDEFG', 3, fillvalue='x') --> ABC DEF Gxx
     # grouper('ABCDEFG', 3, incomplete='strict') --> ABC DEF ValueError
     # grouper('ABCDEFG', 3, incomplete='ignore') --> ABC DEF
     args = [iter(iterable)] * n
-    if incomplete == 'fill':
+    if incomplete == "fill":
         return zip_longest(*args, fillvalue=fillvalue)
-    if incomplete == 'strict':
+    if incomplete == "strict":
         return zip(*args, strict=True)
-    if incomplete == 'ignore':
+    if incomplete == "ignore":
         return zip(*args)
     else:
-        raise ValueError('Expected fill, strict, or ignore')
+        raise ValueError("Expected fill, strict, or ignore")
 
 
 ModelDir = os.environ.get(
-    'MODEL_DIR', '../../../import/models/ai4bharat/IndicTrans2-en/ct2_int8_model'
+    "MODEL_DIR", "../../../import/models/ai4bharat/IndicTrans2-en/ct2_int8_model"
 )
 
 
@@ -43,20 +43,18 @@ class Translator:
         else:
             todo_dict = {}
 
-        self.para_todos = todo_dict.get('paras', [])
-        self.cell_todos = todo_dict.get('cells', [])
+        self.para_todos = todo_dict.get("paras", [])
+        self.cell_todos = todo_dict.get("cells", [])
 
         self.todo_file = todo_file
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
 
-        self.num_async = 4
-
         self.model = None
         self.indic2en_trans = None
 
     def load_model(self):
-        from docint.models.indictrans.engine import Model, split_sentences
+        from docint.models.indictrans.engine import Model
 
         print(ModelDir)
         return Model(str(ModelDir), device="cpu")
@@ -75,30 +73,36 @@ class Translator:
             [{"mr": k, "en": v} for (k, v) in self.indic2en_trans.items()],
             key=lambda d: d["mr"],
         )
-        self.translations_file.write_text(json.dumps(save_trans, indent=2, ensure_ascii=False))
+        self.translations_file.write_text(
+            json.dumps(save_trans, indent=2, ensure_ascii=False)
+        )
 
     def para_translate_basic(self, para_texts):
         para_texts = list(para_texts)
 
         for para in para_texts:
             trans = self.model.translate_paragraph(para, self.src_lang, self.tgt_lang)
-            print(f'M: {para}' + '\n' + f'E:{trans} + \n')
+            print(f"M: {para}" + "\n" + f"E:{trans} + \n")
 
     def para_translate(self, para_texts):
         para_texts = list(para_texts)
-        
-        partitions = self.model.group_paragraphs(para_texts, self.src_lang, self.tgt_lang)
-        print(f'#paragraphs: {len(para_texts)} #partitions: {len(partitions)}')
+
+        partitions = self.model.group_paragraphs(
+            para_texts, self.src_lang, self.tgt_lang
+        )
+        print(f"#paragraphs: {len(para_texts)} #partitions: {len(partitions)}")
 
         for (s, e) in pairwise(partitions):
             batch_paras = para_texts[s:e]
-            batch_trans = self.model.translate_paragraphs(batch_paras, self.src_lang, self.tgt_lang)
+            batch_trans = self.model.translate_paragraphs(
+                batch_paras, self.src_lang, self.tgt_lang
+            )
 
             assert len(batch_trans) == len(batch_paras)
-            
+
             for (p, t) in zip(batch_paras, batch_trans):
                 self.indic2en_trans[p] = t
-                
+
             if batch_trans:
                 self.save_translations()
 
@@ -108,7 +112,9 @@ class Translator:
 
         for (s, e) in pairwise(partitions):
             batch_sents = sents[s:e]
-            batch_trans = self.model.batch_translate(batch_sents, self.src_lang, self.tgt_lang)
+            batch_trans = self.model.batch_translate(
+                batch_sents, self.src_lang, self.tgt_lang
+            )
             assert len(batch_sents) == len(batch_trans)
 
             for (s, t) in zip(batch_sents, batch_trans):
@@ -116,7 +122,7 @@ class Translator:
 
             if batch_trans:
                 self.save_translations()
-                
+
     def translate(self):
         if not self.para_todos and not self.cell_todos:
             return
@@ -127,26 +133,31 @@ class Translator:
         para_texts = [p for p in self.para_todos if p not in self.indic2en_trans]
         cell_texts = [c for c in self.cell_todos if c not in self.indic2en_trans]
 
-        print('******** PARAGRAPHS ***********')
-        self.para_translate(para_texts)        
+        print("******** PARAGRAPHS ***********")
+        self.para_translate(para_texts)
 
-        print('******** CELLS ***********')
+        print("******** CELLS ***********")
 
         self.sentences_translate(cell_texts)
-        print('******** DONE ***********')
+        print("******** DONE ***********")
 
 
 def main():
     input_dir = Path(sys.argv[1])
     output_dir = Path(sys.argv[2])
 
-    todo_file = input_dir / 'doc_translations_todo.json'
+    if len(sys.argv) != 3:
+        print("Usage: {sys.argv[0]} <input_dir> <output_dir>")
+        print("\tinput_dir contains doc_translations_todo.json")
+        sys.exit(1)
+
+    todo_file = input_dir / "doc_translations_todo.json"
     translations_file = output_dir / "doc_translations.json"
 
-    translator = Translator(translations_file, todo_file, 'mar_Deva', 'eng_Latn')
+    translator = Translator(translations_file, todo_file, "mar_Deva", "eng_Latn")
 
     translator.translate()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

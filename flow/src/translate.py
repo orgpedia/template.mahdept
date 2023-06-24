@@ -38,7 +38,7 @@ class Translator:
         self.translations_file = Path(translations_file)
         self.todo_file = Path(todo_file)
 
-        if self.todo_file.exists():
+        if self.todo_file.exists() and self.todo_file.stat().st_size > 0:
             todo_dict = json.loads(self.todo_file.read_text())
         else:
             todo_dict = {}

@@ -124,16 +124,11 @@ class ParaFinder:
                 }
 
             def get_table_info(table, idx):
-                row_texts = []
-                for row in table.all_rows:
-                    r = "|".join(c.text_with_break() for c in row.cells)
-                    row_texts.append(f"|{r}|")
-
-                    return {
-                        "page_idx": table.page_idx,
-                        "table_idx": idx,
-                        "rows": row_texts,
-                    }
+                return {
+                    "page_idx": table.page_idx,
+                    "table_idx": idx,
+                    "rows": [r.get_markdown() for r in table.all_rows]
+                }
 
             para_infos = [get_para_info(p, i) for pg in doc.pages for (i, p) in enumerate(pg.paras)]
             table_infos = [

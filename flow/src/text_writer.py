@@ -24,6 +24,9 @@ class TextWriter:
             lines.append('-' * total_width)
             return
 
+        if not table_info:
+            return
+        
         rows = []
         for row in [r[lang] for r in table_info['rows']]:
             rows.append(row.strip('|').split('|'))
@@ -45,7 +48,7 @@ class TextWriter:
         row_infos = []
         for row, row_trans in zip(table.all_rows, table_trans):
             mr_txt = '|'.join(c.text_with_break() for c in row.cells)
-            en_txt = '|'.join(c if c is not None else c.text_with_break() for c in row_trans)
+            en_txt = '|'.join(c for c in row_trans)
             row_infos.append({'mr': f'|{mr_txt}|', 'en': f'|{en_txt}|'})
         return {'rows': row_infos}
 
@@ -65,6 +68,9 @@ class TextWriter:
                 if para_idx in para_table_idx_dict:
                     for table_idx in para_table_idx_dict[para_idx]:
                         t = table_idx
+                        if not page.table_trans:
+                            continue
+                        
                         table_info = self.build_table_info(page.tables[t], page.table_trans[t])
                         for (lang, lines) in lang_lines_dict.items():
                             self.write_table(table_info, lang, lines)
@@ -74,10 +80,8 @@ class TextWriter:
 
                 for (lang, lines) in lang_lines_dict.items():
                     if lang == 'en':
-                        if page.para_trans[para_idx] is not None:
+                        if page.para_trans:
                             lines.append(page.para_trans[para_idx])
-                        else:
-                            lines.append(para.text_with_break().strip())
                     else:
                         lines.append(para.text_with_break().strip())
         # end

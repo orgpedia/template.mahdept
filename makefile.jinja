@@ -36,6 +36,10 @@ endif
 ifndef SECRETS_DIR
 	$(error SECRETS_DIR is undefined)
 endif
+ifndef MODELS_DIR
+	$(error MODELS_DIR is undefined)
+endif
+
 
 
 import/websites/gr.maharashtra.gov.in/{{dept_short_name}}:
@@ -44,7 +48,10 @@ import/websites/gr.maharashtra.gov.in/{{dept_short_name}}:
 .secrets/google.token:
 	cd .secrets && ln -s $(SECRETS_DIR)/google.token .
 
-import: check_env import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .secrets/google.token
+import/models/ai4bharat/IndicTrans2-en/ct2_int8_model:
+	cd import/models/ai4bharat/IndicTrans2-en/ && ln -s $MODELS_DIR/ct2_int8_model .
+
+import: check_env import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .secrets/google.token import/models/ai4bharat/IndicTrans2-en/ct2_int8_model
 	poetry run python import/src/build_documents.py import/websites/gr.maharashtra.gov.in/{{dept_short_name}} import/documents
 	poetry run python flow/src/link_new.py import/documents flow/writeTxt_/input
 

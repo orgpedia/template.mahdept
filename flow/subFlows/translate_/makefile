@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := all
+
 input/doc_translations_todo.json:
 	cd input && ln -s ../../../writeTxt_/output/doc_translations_todo.json .
 

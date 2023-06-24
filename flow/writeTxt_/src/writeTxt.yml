@@ -2,6 +2,13 @@ description: This folder(task) runs the OCR extracts tables and paragraphs, tran
 
 ignore_docs: [ ]
 
+#docker_pipes: [ 'doc_translator_a4b']
+
+output_dir: 'output'
+config_dir: 'conf'
+output_stub: 'doc'
+
+
 pipeline:
 
   - name: gcv_recognizer2
@@ -21,6 +28,9 @@ pipeline:
       skip_row_with_merged_cells: False
       heading_offset: 0 # ignore heading
       header_row: never
+      pdfplumber_config:
+        vertical_strategy: lines
+        horizontal_strategy: lines
 
   - name: line_finder
     config:
@@ -42,9 +52,12 @@ pipeline:
     config:
       write_output: False
 
-  - name: doc_translator
+  - name: doc_translator_a4b
     config:
+      mode: todo      
       write_output: False
+      src_lang: 'mar_Deva'
+      tgt_lang: 'eng_Latn'
 
   - name: text_writer
     config:

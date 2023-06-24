@@ -5,6 +5,9 @@ org_code := {{ org_code }}
 tasks := writeTxt_
 tasks := $(foreach t,$(tasks),flow/$t)
 
+sub_tasks := translate_
+sub_tasks := $(foreach s, $(foreach t,$(sub_tasks),subFlows/$t), flow/$s)
+
 
 .PHONY: help install import flow export check readme lint format pre-commit $(tasks) check_env
 
@@ -57,6 +60,10 @@ import: check_env import/websites/gr.maharashtra.gov.in/{{dept_short_name}} .sec
 
 flow: $(tasks)
 $(tasks):
+	poetry run make -C $@
+
+translate: $(sub_tasks)
+$(sub_tasks):
 	poetry run make -C $@
 
 check:

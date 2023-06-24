@@ -86,6 +86,8 @@ class TextWriter:
                         lines.append(para.text_with_break().strip())
         # end
         for (lang, lines) in lang_lines_dict.items():
-            lang_file = self.output_dir / f'{doc.pdf_name}.{lang}.txt'
-            lang_file.write_text('\n'.join(lines))
+            lines = filter(None, lines)
+            if lines:
+                lang_file = self.output_dir / f'{doc.pdf_name}.{lang}.txt'
+                lang_file.write_text('\n'.join(lines))
         return doc

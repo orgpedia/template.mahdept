@@ -9,7 +9,8 @@ sub_tasks := translate_
 sub_tasks := $(foreach s, $(foreach t,$(sub_tasks),subFlows/$t), flow/$s)
 
 
-.PHONY: help install import flow export check readme lint format pre-commit $(tasks) check_env $(sub_tasks)
+.PHONY: help install import flow export check readme lint format pre-commit $(tasks) check_env
+.PHONY: trans-install translate trans-export $(sub_tasks)
 
 help:
 	$(info Please use 'make <target>', where <target> is one of)

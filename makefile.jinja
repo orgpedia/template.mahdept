@@ -74,7 +74,7 @@ $(sub_tasks):
 	poetry run make -C $@
 
 trans-export: 
-	poetry run make -C $@	
+	poetry run make -C flow/subFlows/translate_/ compress
 
 
 check:

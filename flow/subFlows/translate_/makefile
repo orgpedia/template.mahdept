@@ -13,3 +13,7 @@ output/doc_translations.json:
 
 all: input/doc_translations_todo.json output/doc_translations.json
 	poetry run python src/translate.py input output > logs/trans.log
+
+compress:
+	test -f ../../writeTxt_/output/doc_translations_todo.json && gzip ../../writeTxt_/output/doc_translations_todo.json
+	test -f ../../writeTxt_/conf/doc_translations.json && gzip ../../writeTxt_/conf/doc_translations.json

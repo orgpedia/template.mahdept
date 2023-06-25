@@ -8,7 +8,7 @@ input/doc_translations_todo.json:
 
 output/doc_translations.json:
 	cd output && ln -sf ../../../writeTxt_/conf/doc_translations.json .
-	test -f ../../writeTxt_/conf/doc_translations.json.gz && gunzip ../../writeTxt_/output/doc_translations.json.gz
+	test -f ../../writeTxt_/conf/doc_translations.json.gz && gunzip ../../writeTxt_/conf/doc_translations.json.gz
 
 
 all: input/doc_translations_todo.json output/doc_translations.json

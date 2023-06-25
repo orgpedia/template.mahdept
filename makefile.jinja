@@ -65,6 +65,7 @@ $(tasks):
 	poetry run make -C $@
 
 trans-install: import/models/ai4bharat/IndicTrans2-en/ct2_int8_model
+	poetry lock
 	poetry install --only=translate
 
 
@@ -74,7 +75,7 @@ $(sub_tasks):
 	poetry run make -C $@
 
 trans-export: 
-	poetry run make -C flow/subFlows/translate_/ compress
+	poetry run make -C flow/subFlows/translate_ compress
 
 
 check:

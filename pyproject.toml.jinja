@@ -55,6 +55,17 @@ black = "^22.6.0"
 ruff = "^0.0.243"
 #pre-commit = "^2.21.0" # version compatible with 3.7
 
+
+[tool.poetry.group.translate]
+optional = true
+
+[tool.poetry.group.translate.dependencies]
+docint = { git = "https://github.com/mukundesh/docint.git" }
+
+indic-nlp-library = {git = "https://github.com/orgpedia/indic_nlp_library-deva.git"}
+ctranslate2 = "3.9.0"
+sentencepiece = "^0.1.99"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

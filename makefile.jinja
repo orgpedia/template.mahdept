@@ -62,9 +62,17 @@ flow: $(tasks)
 $(tasks):
 	poetry run make -C $@
 
+trans-install: import/models/ai4bharat/IndicTrans2-en/ct2_int8_model
+	poetry install --only=translate
+
+
 translate: $(sub_tasks)
 $(sub_tasks):
 	poetry run make -C $@
+
+trans-export: 
+	poetry run make -C $@	
+
 
 check:
 	poetry run op check

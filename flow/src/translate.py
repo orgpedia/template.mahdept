@@ -61,7 +61,7 @@ class Translator:
 
     def load_translations(self):
         indic2en_trans = {}
-        if self.translations_file.exists():
+        if self.translations_file.exists() and self.translations_file.stat().st_size > 0:
             json_list = json.loads(self.translations_file.read_text())
             for trans_dict in json_list:
                 m, e = trans_dict["mr"], trans_dict["en"]

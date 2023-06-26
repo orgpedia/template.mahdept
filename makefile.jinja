@@ -74,10 +74,6 @@ translate: $(sub_tasks)
 $(sub_tasks):
 	poetry run make -C $@
 
-trans-export: 
-	poetry run make -C flow/subFlows/translate_ compress
-
-
 check:
 	poetry run op check
 
@@ -92,8 +88,8 @@ format:
 	poetry run black -q .
 	poetry run ruff --fix .
 
-export: format lint
-	poetry run make -C flow/writeTxt_ compress
+export: 
+	$(info "Nothing for now")
 	# git add .
 	# git commit
 
